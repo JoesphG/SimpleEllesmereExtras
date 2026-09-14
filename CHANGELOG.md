@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.1
+
+- The options window no longer lays the reload button on top of the text above
+  it, and the world no longer shows through the window.
+- A row no longer stays highlighted after the cursor has left it.
+- The Diagnostics page lists what each command does, not just its name.
+
 ## 1.2.0
 
 - An options window. `/see` opens it, and Blizzard's AddOns list has a button.
