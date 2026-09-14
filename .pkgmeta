@@ -1,0 +1,18 @@
+package-as: SimpleEllesmereExtras
+
+# Release notes come from the hand-written changelog, not commit messages.
+manual-changelog: CHANGELOG.md
+
+ignore:
+  - .github
+  - .gitignore
+  - .luacheckrc
+  - .luarc.json
+  - .pkgmeta
+  - .styluaignore
+  - Makefile
+  - README.md
+  - images
+  - stylua.toml
+  - tests
+  - tools
