@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lua:
+    name: Lint, format and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Lua and luacheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 luarocks
+          sudo luarocks install luacheck
+
+      - name: Lint
+        run: luacheck .
+
+      - name: Check formatting
+        uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --check .
+
+      - name: Test
+        run: for t in tests/*.lua; do lua5.1 "$t" || exit 1; done
+
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # release.yml packages a tagged commit; the packager refuses to build it
+      # twice, leaving nothing here to check. Skip rather than fail.
+      - name: Check whether this commit is already tagged
+        id: tagged
+        run: |
+          tags=$(git tag --points-at HEAD)
+          if [ -n "$tags" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "HEAD carries $tags -- release.yml packages this commit."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Builds the zip as a release would, uploading nothing.
+      - name: Packager dry run
+        if: steps.tagged.outputs.skip != 'true'
+        uses: BigWigsMods/packager@v2.5.1
+        with:
+          args: -d -z
+
+      - name: Confirm the addon files are present
+        if: steps.tagged.outputs.skip != 'true'
+        run: |
+          set -e
+          pkg=".release/SimpleEllesmereExtras"
+          for f in SimpleEllesmereExtras.toc icon.tga Core.lua HyperlinkHover.lua Emoji.lua Baganator.lua GearAlert.lua Media/emoji/1f600.png Media/emoji/LICENSE.txt; do
+            test -f "$pkg/$f" || { echo "::error::missing $f in package"; exit 1; }
+          done
+          for f in .pkgmeta README.md images tests tools .github Makefile; do
+            test ! -e "$pkg/$f" || { echo "::error::$f should not be packaged"; exit 1; }
+          done
+          echo "Package contents OK"
