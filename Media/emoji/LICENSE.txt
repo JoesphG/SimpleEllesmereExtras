@@ -1,0 +1,10 @@
+The PNG files in this folder are emoji bitmaps taken from Noto Color Emoji,
+extracted from the font's own CBDT table by .addon-patches/tools/make-emoji.py.
+
+    Noto Color Emoji
+    Copyright 2013-2017 Google Inc., Arjen Nienhuis <a.g.nienhuis@gmail.com>
+    Source: https://github.com/googlefonts/noto-emoji
+    Licensed under the SIL Open Font License, Version 1.1
+    http://scripts.sil.org/OFL
+
+No changes beyond decoding each glyph to RGBA and padding it to a square canvas.

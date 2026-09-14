@@ -1,0 +1,19 @@
+## Interface: 120100
+## Title: SimpleEllesmereExtras
+## Notes: Extras for EllesmereUI: chat link preview, chat emoji, a Baganator skin and a missing enchant or gem alert.
+## Author: JoesphG
+## Version: 1.0.0
+## SavedVariables: SimpleEllesmereExtrasDB
+## OptionalDeps: EllesmereUI, EllesmereUIBlizzardSkin, EllesmereUIChat, Baganator
+## X-Curse-Project-ID: 1695824
+## Category-enUS: User Interface
+## AllowLoadGameType: mainline
+## IconTexture: Interface\AddOns\SimpleEllesmereExtras\icon.tga
+## X-License: MIT
+## X-Website: https://github.com/JoesphG/SimpleEllesmereExtras
+
+Core.lua
+HyperlinkHover.lua
+Emoji.lua
+Baganator.lua
+GearAlert.lua
