@@ -10,6 +10,9 @@ needs you to edit it: everything goes through its public skinning API. The chat
 features work with or without EllesmereUI installed; the window packs, the
 Baganator skin and the gear alert need it.
 
+Everything has a switch, in an options window at `/see` or from the button on
+this addon's entry in Blizzard's AddOns list.
+
 ## Features
 
 - **Window packs.** Skins the small Blizzard windows EllesmereUI has no pack
@@ -17,8 +20,9 @@ Baganator skin and the gear alert need it.
   with a squared icon, skins the role poll, PVP ready and "Choose your Roles"
   dialogs, skins chat bubbles, and carries your chosen font across 31 windows.
   Button labels are fitted rather than clipped, so "Start a Group" stays whole.
-  All of it switches off with `/euilocal`, and none of it touches a window
-  EllesmereUI already skins itself.
+  Six switches, so the font walk can go without taking the rails and the chat
+  bubbles with it, and none of it touches a window EllesmereUI already skins
+  itself.
 - **Chat link preview.** Hover an item, spell, quest, achievement or currency
   link in chat and its tooltip appears. Hidden again on leave, on scroll, and
   in combat. `/euihover` toggles it.
@@ -39,6 +43,7 @@ Baganator skin and the gear alert need it.
 
 | Command | Effect |
 | --- | --- |
+| `/see` | Open the options window |
 | `/euihover` | Toggle the chat link preview |
 | `/euiemoji` | Toggle emoji rendering |
 | `/euiemoji size <8-32>` | Emoji size in chat |

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0
+
+- An options window. `/see` opens it, and Blizzard's AddOns list has a button.
+- The window packs split into six switches, so the font walk can go without
+  taking the rails and the chat bubbles with it.
+- The gear alert and the Baganator skin have switches of their own. The gear
+  alert applies without a reload; the skins do not, and the window says so.
+
 ## 1.1.0
 
 The window packs moved here from EllesmereUI's own .toc, so nothing in the

@@ -35,6 +35,7 @@ alert need it.
 
 | Command | Effect |
 | --- | --- |
+| `/see` | Open the options window |
 | `/euihover` | Toggle the chat link preview |
 | `/euiemoji` | Toggle emoji rendering |
 | `/euiemoji size <8-32>` | Emoji size in chat |
@@ -49,6 +50,14 @@ Blizzard Window Skins, Third-Party Addons.
 `/seediag` is a developer tool. With no argument it walks the open bag; give it
 a frame name for anything else. It measures the live frames, so it reports on
 whatever is actually on screen rather than only this addon's work.
+
+## Options
+
+`/see`, or the button on this addon's entry in Blizzard's AddOns list. Three
+pages: the chat and gear switches, the six window packs, and the diagnostics.
+
+Skins are read at login, so a pack switch needs a reload, and the window says
+so with a button to do it. Everything else applies straight away.
 
 ## Installation
 
