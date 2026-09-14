@@ -35,9 +35,14 @@ alert need it.
 | `/euiemoji` | Toggle emoji rendering |
 | `/euiemoji size <8-32>` | Emoji size in chat |
 | `/euiemoji list <text>` | Search the emoji names |
+| `/seediag [FrameName]` | Report text that is truncated or spilling its frame |
 
 The Baganator skin follows EllesmereUI's own switch: Blizz UI Enhanced,
 Blizzard Window Skins, Third-Party Addons.
+
+`/seediag` is a developer tool. With no argument it walks the open bag; give it
+a frame name for anything else. It measures the live frames, so it reports on
+whatever is actually on screen rather than only this addon's work.
 
 ## Installation
 
@@ -78,6 +83,12 @@ make test      # every suite in tests/, plain Lua 5.1, no game
 make format    # stylua .
 make package   # BigWigsMods packager, local zip, uploads nothing
 ```
+
+Text this addon did not create is recoloured, never re-fonted. A face swap
+changes glyph widths at the same point size, and the containers belong to
+somebody else: Baganator clamps a category label to the icon grid beneath it
+with word wrap off, and a slot corner widget has no width to clip against at
+all. `/seediag` is how that stays true.
 
 `tools/make-emoji.py` rebuilds `Media/emoji/` and the generated table in
 `Emoji.lua` from Noto Color Emoji. Run it from the addon folder after touching
