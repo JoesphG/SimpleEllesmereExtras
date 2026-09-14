@@ -30,6 +30,15 @@ end
 function Widget:SetDrawLayer(l)
     self.layer = l
 end
+-- A category label / section header is a Button, not a FontString: Baganator
+-- pools them with CreateFramePool("Button", ...). The skinner has to resolve
+-- through GetFontString, and this is what proves it does.
+function Widget:GetFontString()
+    return self.fontString
+end
+function Widget:SetTextColor(r, g, b)
+    self.textColour = { r, g, b }
+end
 function Widget:SetShown(v)
     self.shown = v and true or false
 end
@@ -125,12 +134,22 @@ WSkin = {
     Panel = rec("Panel"),
     Inset = rec("Inset"),
     EditBox = rec("EditBox"),
+    White = function(fs, r, g, b)
+        calls.White = (calls.White or 0) + 1
+        fs.textColour = { r, g, b }
+    end,
+    GetAccentColor = function()
+        return 0.047, 0.824, 0.616
+    end,
     Checkbox = rec("Checkbox"),
     Dropdown = rec("Dropdown"),
     Tab = rec("Tab"),
     ScrollBar = rec("ScrollBar"),
     CloseButton = rec("CloseButton"),
     PageButton = rec("PageButton"),
+    -- A tripwire, not a skinner. Changing a face we did not create is what
+    -- truncated category labels and overflowed slot corners; the policy is
+    -- colour only, and this is here so re-adding a Font call fails the suite.
     Font = function(fs)
         calls.Font = (calls.Font or 0) + 1
         fs.fonted = true
@@ -274,18 +293,27 @@ check(
 listener({ regionType = "ScrollButton", region = W("Button"), tags = { "left" } })
 check("scroll arrow uses the house page glyph", calls.PageButton == 1)
 
--- Category text
-local label = W("FontString")
+-- Category text. Colour only: the label is clamped to the width of the icon
+-- grid beneath it with word wrap off, so a wider face only buys ellipsis.
+local label = W("Button")
+label.fontString = W("FontString")
 listener({ regionType = "CategoryLabel", region = label })
-check("category label re-fonted", label.fonted == true)
-local header = W("Frame")
-header.Label = W("FontString")
-listener({ regionType = "CategorySectionHeader", region = header })
-check("section header re-fonted via .Label", header.Label.fonted == true)
+check("label resolved through GetFontString, not the Button", label.fontString.textColour ~= nil)
+check("label recoloured to the house accent", (label.fontString.textColour or {})[1] == 0.047)
+check("label font left alone", label.fontString.fonted == nil and label.fonted == nil)
 
+local header = W("Button")
+header.fontString = W("FontString")
+listener({ regionType = "CategorySectionHeader", region = header })
+check("section header resolved through GetFontString", header.fontString.textColour ~= nil)
+check("section header font left alone", header.fontString.fonted == nil)
+
+-- A corner widget is corner-anchored on a slot with no width to clip it, and
+-- its plugin may colour-code the text itself. Both hands off.
 local corner = W("FontString")
 listener({ regionType = "CornerWidget", region = corner })
-check("fontstring corner widget re-fonted", corner.fonted == true)
+check("corner widget font left alone", corner.fonted == nil)
+check("corner widget colour left to its plugin", corner.textColour == nil)
 local cornerTex = W("Texture")
 listener({ regionType = "CornerWidget", region = cornerTex })
 check("texture corner widget left alone", cornerTex.fonted == nil)
@@ -298,6 +326,10 @@ check("divider recoloured without error", _G.__err == nil, _G.__err)
 -- Unknown types must be ignored silently.
 listener({ regionType = "SomethingNew", region = W("Frame") })
 check("unknown regionType ignored", _G.__err == nil, _G.__err)
+
+-- The whole point, asserted once over every region type above: this skin
+-- never changes the metrics of text it did not create.
+check("no host font was ever re-faced", calls.Font == nil, calls.Font)
 
 print(fails == 0 and "\nall checks passed" or ("\n" .. fails .. " failed"))
 os.exit(fails == 0 and 0 or 1)

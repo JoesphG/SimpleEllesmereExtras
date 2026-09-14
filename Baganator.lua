@@ -199,6 +199,55 @@ local function SkinItemButton(button)
 end
 
 -------------------------------------------------------------------------------
+--  Text: colour only, never the font
+--
+--  Baganator sizes a category label from GetUnboundedStringWidth at layout
+--  time and clamps it to the width of the icon grid beneath it, with word wrap
+--  off (CategoryViews/Packing.lua, CategoryViews/Components.lua). A face with
+--  wider glyphs at the same point size therefore buys nothing but ellipsis.
+--  Corner widgets are worse: corner-anchored on a slot with no width at all,
+--  so a wider face spills into the neighbouring slot with nothing to clip it.
+--
+--  WSkin.Font keeps the point size and swaps only the face, so the width delta
+--  is whatever the user's font file happens to be -- unpredictable in both
+--  direction and size, which is why this reproduced inconsistently.
+--
+--  Baganator's own skins agree: Blizzard and Dark leave text alone, NDui
+--  recolours it, ElvUI puts its one font change behind an opt-in, and GW2 is
+--  alone in swapping the face -- sizing it DOWN when it does.
+--
+--  RESOLVE THE FONTSTRING FIRST. The region handed over for a label or a
+--  header is the Button (labelsPool is a CreateFramePool("Button", ...)), and
+--  a Button is not a FontInstance. The old code passed it straight to
+--  WSkin.Font, which bails on anything without GetFont, so both of those
+--  skinners were doing nothing at all.
+-------------------------------------------------------------------------------
+local function FontStringOf(region)
+    if not region then
+        return nil
+    end
+    if region.IsObjectType and region:IsObjectType("FontString") then
+        return region
+    end
+    if region.GetFontString then
+        return region:GetFontString()
+    end
+end
+
+local function ColorText(region)
+    local fs = FontStringOf(region)
+    if not fs or not WSkin.White then
+        return
+    end
+    local accent = WSkin.GetAccentColor
+    if accent then
+        WSkin.White(fs, accent())
+    else
+        WSkin.White(fs)
+    end
+end
+
+-------------------------------------------------------------------------------
 --  Per-region skinners, keyed by Baganator's own regionType
 -------------------------------------------------------------------------------
 local skinners = {
@@ -281,18 +330,18 @@ local skinners = {
     end,
 
     CategorySectionHeader = function(region)
-        WSkin.Font(region.Label or region)
+        ColorText(region)
     end,
 
     CategoryLabel = function(region)
-        WSkin.Font(region)
+        ColorText(region)
     end,
 
-    CornerWidget = function(region)
-        if region.IsObjectType and region:IsObjectType("FontString") then
-            WSkin.Font(region)
-        end
-    end,
+    -- Deliberately nothing. Corner widgets are plugin-driven -- item level,
+    -- stack counts, keystone level -- and several colour-code their own text,
+    -- so a recolour would destroy the plugin's signal and a re-font overflows
+    -- the slot. Baganator's Dark skin stubs this out for the same reason.
+    CornerWidget = function() end,
 
     -- The rule between category sections: a faint hairline instead of
     -- Blizzard's tooltip divider art. The facade exposes no border colour.
