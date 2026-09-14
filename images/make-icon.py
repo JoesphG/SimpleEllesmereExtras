@@ -1,7 +1,9 @@
 """Renders icon.tga and the CurseForge avatar. Needs Pillow and numpy.
 
-A beveled gold E in Cinzel on the void starfield, in the square gold frame the
-Simple Addons icons share. Cinzel is OFL and fetched from google/fonts on
+A beveled gold E in Cinzel inside a thin teal ring, EllesmereUI's accent, on a
+dark teal starfield, in the square gold frame the Simple Addons icons share.
+The ring is a plain circle: Ellesmere's own mark is a ring-and-bar "e" and
+stays theirs. Cinzel is OFL and fetched from google/fonts on
 first run.
 """
 from PIL import Image, ImageDraw, ImageFilter, ImageChops, ImageFont
@@ -86,7 +88,8 @@ class Icon:
 FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Cinzel.ttf")
 FONT_URL = "https://github.com/google/fonts/raw/main/ofl/cinzel/Cinzel%5Bwght%5D.ttf"
 GOLD, GOLD_HI, GOLD_LO = (222, 172, 62), (255, 240, 180), (104, 68, 14)
-BG_TOP, BG_BOT, VGLOW = (16, 9, 34), (3, 2, 8), (70, 30, 120)
+BG_TOP, BG_BOT, VGLOW = (8, 32, 30), (2, 7, 8), (10, 90, 72)
+TEAL, TEAL_HI = (12, 210, 159), (170, 255, 230)
 
 def circle_mask(P, r=None):
     m = Image.new("L", (P, P), 0); r = r or P / 2
@@ -144,11 +147,24 @@ def finish_round(i):
     out = i.out(); m = circle_mask(out.size[0]); out.putalpha(ImageChops.multiply(out.split()[3], m)); return out
 
 
+def teal_ring(i, r_frac=0.43, w_frac=0.022):
+    P = i.P
+    c = P / 2
+    r = P * r_frac
+    w = P * w_frac
+    i.glow(lambda g: g.ellipse([c - r, c - r, c + r, c + r], outline=TEAL + (255,), width=int(w * 2.2)), P * 0.03, 0.9)
+    d = ImageDraw.Draw(i.img)
+    d.ellipse([c - r, c - r, c + r, c + r], outline=lerp(TEAL, (0, 0, 0), 0.45) + (255,), width=int(w))
+    d.ellipse([c - r + w * 0.15, c - r + w * 0.15, c + r - w * 0.15, c + r - w * 0.15], outline=TEAL + (255,), width=int(w * 0.6))
+    d.arc([c - r, c - r, c + r, c + r], 200, 330, fill=TEAL_HI + (230,), width=int(w * 0.28))
+
+
 def render(N, S=4):
     i = Icon(N, S)
     P = i.P
-    i.background(BG_TOP, BG_BOT, glow=VGLOW, glow_at=(0.5, 0.48), glow_r=0.6, stars=160, seed=5)
-    gold_from_mask(i, text_mask(P, "E", P * 0.74))
+    i.background(BG_TOP, BG_BOT, glow=VGLOW, glow_at=(0.5, 0.5), glow_r=0.55, stars=140, seed=5)
+    teal_ring(i)
+    gold_from_mask(i, text_mask(P, "E", P * 0.56), glow=(255, 210, 110))
     i.vignette(0.7)
     i.frame()
     return i.out()
