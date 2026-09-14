@@ -3,14 +3,22 @@ Source for the CurseForge project description. There is no API for it, so it
 is pasted by hand into the Description editor with the format set to Markdown.
 -->
 
-**Extras for EllesmereUI: chat link preview, emoji in chat, a Baganator skin, and a glow on gear missing an enchant or gem.**
+**Extras for EllesmereUI: skins for the stock windows it has no pack for, chat link preview, emoji in chat, a Baganator skin, and a glow on gear missing an enchant or gem.**
 
-Third-party. Not by Ellesmere, and nothing here modifies EllesmereUI. The chat
-features work with or without EllesmereUI installed; the Baganator skin and the
-gear alert need it, and go through its public skinning API.
+Third-party. Not by Ellesmere. Nothing here modifies EllesmereUI, and nothing
+needs you to edit it: everything goes through its public skinning API. The chat
+features work with or without EllesmereUI installed; the window packs, the
+Baganator skin and the gear alert need it.
 
 ## Features
 
+- **Window packs.** Skins the small Blizzard windows EllesmereUI has no pack
+  for, flattens the Group Finder and PVP category rails toward a flat plate
+  with a squared icon, skins the role poll, PVP ready and "Choose your Roles"
+  dialogs, skins chat bubbles, and carries your chosen font across 31 windows.
+  Button labels are fitted rather than clipped, so "Start a Group" stays whole.
+  All of it switches off with `/euilocal`, and none of it touches a window
+  EllesmereUI already skins itself.
 - **Chat link preview.** Hover an item, spell, quest, achievement or currency
   link in chat and its tooltip appears. Hidden again on leave, on scroll, and
   in combat. `/euihover` toggles it.
@@ -35,6 +43,11 @@ gear alert need it, and go through its public skinning API.
 | `/euiemoji` | Toggle emoji rendering |
 | `/euiemoji size <8-32>` | Emoji size in chat |
 | `/euiemoji list <text>` | Search the emoji names |
+| `/euilocal on\|off\|status` | Switch the window packs off, then `/reload` |
+
+Two diagnostics for bug reports: `/euidiag <FrameName>` dumps a window's text
+with its font, size and box widths, and `/seediag <FrameName>` lists text that
+is truncated or spilling out of its frame. Paste either into a report.
 
 ## Support
 
