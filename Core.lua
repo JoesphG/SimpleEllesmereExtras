@@ -61,4 +61,7 @@ local boot = CreateFrame("Frame")
 boot:RegisterEvent("PLAYER_LOGIN")
 boot:SetScript("OnEvent", function()
     ns.loginDone = true
+    if ns.Panel and ns.Panel.RegisterSettingsCategory then
+        ns.Panel.RegisterSettingsCategory()
+    end
 end)

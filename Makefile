@@ -11,8 +11,12 @@ lint:
 format:
 	stylua .
 
+# frames.lua is a stub library the panel suite loads, not a suite of its own.
 test:
-	for t in tests/*.lua; do lua5.1 $$t || exit 1; done
+	for t in tests/*.lua; do \
+		case "$$t" in tests/frames.lua) continue;; esac; \
+		lua5.1 $$t || exit 1; \
+	done
 
 # Build the CurseForge zip locally without uploading anything.
 package:

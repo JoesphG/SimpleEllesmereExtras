@@ -44,12 +44,42 @@ end
 -- taking the rails and the chat bubbles with it. The registry keys the packs
 -- already; two of them carry the owning addon after a colon.
 ns.PACKS = {
-    { key = "localfonts", db = "packFonts", label = "Fonts across windows" },
-    { key = "localstock", db = "packStock", label = "Stock Blizzard windows" },
-    { key = "localgroupfinder", db = "packGroupFinder", label = "Group Finder rail" },
-    { key = "localpvp", db = "packPvp", label = "PVP rail" },
-    { key = "localdialogs", db = "packDialogs", label = "Popup dialogs" },
-    { key = "localchatbubbles", db = "packBubbles", label = "Chat bubbles" },
+    {
+        key = "localfonts",
+        db = "packFonts",
+        label = "Fonts across windows",
+        desc = "Carry your EllesmereUI font into 31 stock windows, fitting button labels rather than clipping them.",
+    },
+    {
+        key = "localstock",
+        db = "packStock",
+        label = "Stock Blizzard windows",
+        desc = "Skin the small windows EllesmereUI has no pack for: tabard, raid info, macros and the rest.",
+    },
+    {
+        key = "localgroupfinder",
+        db = "packGroupFinder",
+        label = "Group Finder rail",
+        desc = "Flatten the Dungeon Finder, Raid Finder and Premade Groups tiles to a plate with a square icon.",
+    },
+    {
+        key = "localpvp",
+        db = "packPvp",
+        label = "PVP rail",
+        desc = "The same flattening for Quick Match, Rated, Premade Groups and Training Grounds.",
+    },
+    {
+        key = "localdialogs",
+        db = "packDialogs",
+        label = "Popup dialogs",
+        desc = "Skin the role poll, the PVP ready check and Choose your Roles.",
+    },
+    {
+        key = "localchatbubbles",
+        db = "packBubbles",
+        label = "Chat bubbles",
+        desc = "Replace the parchment bubble with a translucent themed panel. Polled, and idle when nobody talks.",
+    },
 }
 
 local byKey = {}
@@ -76,6 +106,60 @@ end
 
 function ns.BaganatorSkinEnabled()
     return ns.DB().baganator ~= false
+end
+
+--------------------------------------------------------------------------------
+-- What the options panel reads. Kept here with the switches rather than in the
+-- panel, so the panel stays a view over state it does not own.
+--------------------------------------------------------------------------------
+
+function ns.BaganatorLoaded()
+    return (C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("Baganator")) or false
+end
+
+-- The size emoji fall back to when nothing is pinned. Mirrors Emoji.lua, which
+-- reads the live chat font so a texture cannot outgrow the line box.
+function ns.ChatFontSize()
+    local frame = DEFAULT_CHAT_FRAME
+    if frame and frame.GetFont then
+        local _, points = frame:GetFont()
+        if type(points) == "number" and points >= 8 and points <= 32 then
+            return math.floor(points)
+        end
+    end
+    return 14
+end
+
+function ns.StatusText()
+    if not ns.S then
+        return "EllesmereUI is not loaded. The chat features still work; nothing that skins does."
+    end
+
+    local on = 0
+    for _, pack in ipairs(ns.PACKS) do
+        if ns.PackEnabled(pack.key) then
+            on = on + 1
+        end
+    end
+    if not ns.PacksEnabled() then
+        return "Window packs are off. The chat features and the gear alert are unaffected."
+    end
+    return ("Window packs on, %d of %d applied."):format(on, #ns.PACKS)
+end
+
+function ns.Reload()
+    if ReloadUI then
+        ReloadUI()
+    end
+end
+
+-- The diagnostics are slash commands, and the panel offers them as buttons
+-- rather than growing a second copy of each.
+function ns.RunSlash(name)
+    local handler = _G.SlashCmdList and _G.SlashCmdList[name:upper()]
+    if handler then
+        handler("")
+    end
 end
 
 -- Read once the saved variables exist, so `status` can tell a pending change
