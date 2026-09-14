@@ -17,3 +17,4 @@ HyperlinkHover.lua
 Emoji.lua
 Baganator.lua
 GearAlert.lua
+Diag.lua

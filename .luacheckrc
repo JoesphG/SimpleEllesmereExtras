@@ -60,6 +60,7 @@ globals = {
     "SlashCmdList",
     "SLASH_EUIEMOJI1",
     "SLASH_EUIHOVER1",
+    "SLASH_SEEDIAG1",
 }
 
 read_globals = wow_api
