@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.0
+
+The window packs moved here from EllesmereUI's own .toc, so nothing in the
+EllesmereUI folder is edited any more.
+
+- Skins the stock Blizzard windows EllesmereUI has no pack for, flattens the
+  Group Finder and PVP category rails, skins three popup dialogs and the chat
+  bubbles, and walks fonts over 31 windows.
+- Button labels no longer lose their last character: "Start a Grou" and
+  "Sign U" are whole again.
+- `/euilocal` switches the window packs off; `/euidiag` dumps a window's text.
+
 ## 1.0.1
 
 - Baganator category labels and section headers are recoloured, not re-fonted,

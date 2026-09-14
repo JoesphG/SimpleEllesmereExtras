@@ -23,6 +23,10 @@ alert need it.
 - **Baganator skin.** Bags, bank, guild bank and the rest of Baganator take the
   EllesmereUI look through Baganator's public skin listener and EllesmereUI's
   public skin API. Leaves item slots alone when Masque owns them.
+- **Window packs.** Skins the stock Blizzard windows EllesmereUI has no pack
+  for, flattens the Group Finder and PVP category rails, skins the role poll,
+  PVP ready and Choose your Roles dialogs, skins chat bubbles, and walks fonts
+  over 31 windows. Off with `/euilocal`.
 - **Missing enchant or gem alert.** A pulsing border on any character-sheet or
   inspect-sheet slot missing an enchant (red) or a gem (amber). Follows
   EllesmereUI's own rules for which slots take an enchant in 12.x.
@@ -36,6 +40,8 @@ alert need it.
 | `/euiemoji size <8-32>` | Emoji size in chat |
 | `/euiemoji list <text>` | Search the emoji names |
 | `/seediag [FrameName]` | Report text that is truncated or spilling its frame |
+| `/euilocal on\|off\|status` | Switch the window packs off, then `/reload` |
+| `/euidiag [FrameName]` | Dump a window's text: font, size, box vs text width |
 
 The Baganator skin follows EllesmereUI's own switch: Blizz UI Enhanced,
 Blizzard Window Skins, Third-Party Addons.
@@ -83,6 +89,13 @@ make test      # every suite in tests/, plain Lua 5.1, no game
 make format    # stylua .
 make package   # BigWigsMods packager, local zip, uploads nothing
 ```
+
+`Chrome.lua` supplies the five primitives EllesmereUI's public skin API does
+not publish: the theme table, the apply-at-login registry, `CommonChrome`,
+`ButtonsIn` and `AddBorder`. None of it is EllesmereUI's code, whose licence
+reserves all rights; the behaviour is matched from outside using the published
+API. The cost of that is drift: if they restyle, this can fall out of step and
+nothing will say so.
 
 Text this addon did not create is recoloured, never re-fonted. A face swap
 changes glyph widths at the same point size, and the containers belong to
