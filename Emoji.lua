@@ -1593,13 +1593,36 @@ local function Enabled()
     return ns.DB().emoji ~= false
 end
 
+-- Derived from the chat font, not fixed at DEFAULT_SIZE. An inline texture
+-- taller than the line box overlaps the line above it, and chat line height
+-- comes from the font, which the user sets. A ScrollingMessageFrame is a
+-- FontInstance, so the frame can be asked directly. Blizzard's frame is the
+-- one asked even when EllesmereUIChat is drawing, since it is fed from the
+-- same pipeline; `/euiemoji size N` overrides either way.
 local function Size()
     local size = ns.DB().emojiSize
-    return (type(size) == "number" and size >= 8 and size <= 32) and size or DEFAULT_SIZE
+    if type(size) == "number" and size >= 8 and size <= 32 then
+        return size
+    end
+
+    local frame = DEFAULT_CHAT_FRAME
+    if frame and frame.GetFont then
+        local _, points = frame:GetFont()
+        if not (issecretvalue and issecretvalue(points)) and type(points) == "number" then
+            if points >= 8 and points <= 32 then
+                return math.floor(points)
+            end
+        end
+    end
+
+    return DEFAULT_SIZE
 end
 
+-- Width stated as well as height: the art is square, and leaving width to the
+-- default lets a file that is not stretch the line it sits in.
 local function Tag(hex)
-    return ("|T%s%s.png:%d|t"):format(ART, hex, Size())
+    local size = Size()
+    return ("|T%s%s.png:%d:%d|t"):format(ART, hex, size, size)
 end
 
 -- VS16, the emoji presentation selector.

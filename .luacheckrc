@@ -14,6 +14,7 @@ local wow_api = {
     -- Chat
     "CHAT_FRAMES",
     "ChatFrame_AddMessageEventFilter",
+    "DEFAULT_CHAT_FRAME",
     "FCF_OpenNewWindow",
     "FCF_OpenTemporaryWindow",
 

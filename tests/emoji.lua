@@ -60,7 +60,7 @@ local function say(msg)
 end
 
 local function tex(hex)
-    return ("|TInterface\\AddOns\\SimpleEllesmereExtras\\Media\\emoji\\%s.png:14|t"):format(hex)
+    return ("|TInterface\\AddOns\\SimpleEllesmereExtras\\Media\\emoji\\%s.png:14:14|t"):format(hex)
 end
 local HEART, SMILE, BROKEN = tex("2764"), tex("1f604"), tex("1f494")
 
@@ -163,10 +163,26 @@ check("list says when nothing matches", printed[#printed]:find("nothing matching
 
 -- Size.
 SlashCmdList.EUIEMOJI("size 20")
-check("size takes", say(":smile:"):find(":20|t", 1, true) ~= nil, say(":smile:"))
+check("size takes", say(":smile:"):find(":20:20|t", 1, true) ~= nil, say(":smile:"))
 SlashCmdList.EUIEMOJI("size 99")
-check("out-of-range size refused", say(":smile:"):find(":20|t", 1, true) ~= nil)
+check("out-of-range size refused", say(":smile:"):find(":20:20|t", 1, true) ~= nil)
 SimpleEllesmereExtrasDB.emojiSize = nil
+
+-- With no override the size follows the chat font, because a texture taller
+-- than the line box overlaps the line above it. There was no chat frame until
+-- now, which is why every check above ran at the fallback size.
+DEFAULT_CHAT_FRAME = {
+    GetFont = function()
+        return "Fonts\\ARIALN.TTF", 18, ""
+    end,
+}
+check("size follows the chat font", say(":smile:"):find(":18:18|t", 1, true) ~= nil, say(":smile:"))
+DEFAULT_CHAT_FRAME.GetFont = function()
+    return "Fonts\\ARIALN.TTF", 400, ""
+end
+check("an absurd chat font falls back", say(":smile:"):find(":14:14|t", 1, true) ~= nil, say(":smile:"))
+DEFAULT_CHAT_FRAME = nil
+check("no chat frame falls back", say(":smile:") == SMILE, say(":smile:"))
 
 -- Toggle.
 check("defaults on", SimpleEllesmereExtrasDB.emoji == nil)
