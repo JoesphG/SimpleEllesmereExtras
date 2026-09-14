@@ -39,6 +39,12 @@ end
 function Widget:SetTextColor(r, g, b)
     self.textColour = { r, g, b }
 end
+function Widget:GetTextInsets()
+    return self.insetL or 0, self.insetR or 0, 0, 0
+end
+function Widget:SetTextInsets(l, r)
+    self.insetL, self.insetR = l, r
+end
 function Widget:SetShown(v)
     self.shown = v and true or false
 end
@@ -317,6 +323,16 @@ check("corner widget colour left to its plugin", corner.textColour == nil)
 local cornerTex = W("Texture")
 listener({ regionType = "CornerWidget", region = cornerTex })
 check("texture corner widget left alone", cornerTex.fonted == nil)
+
+-- Text sits on our border unless the inset clears it, and a template that
+-- already reserves room for its search icon must keep the larger value.
+local search = W("EditBox")
+listener({ regionType = "SearchBox", region = search })
+check("search box text inset clear of the border", search.insetL == 4, search.insetL)
+local wideSearch = W("EditBox")
+wideSearch.insetL = 16
+listener({ regionType = "SearchBox", region = wideSearch })
+check("a larger stock inset is kept", wideSearch.insetL == 16, wideSearch.insetL)
 
 -- Divider
 local div = W("Texture")

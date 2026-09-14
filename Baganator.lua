@@ -247,6 +247,19 @@ local function ColorText(region)
     end
 end
 
+-- Our border sits on the edit box's own bounds, so text that relied on the
+-- stock art for its margin lands on top of it. Raise the inset rather than set
+-- it: a template that already reserves room for a search icon keeps its value.
+local TEXT_INSET = 4
+
+local function InsetText(eb)
+    if not (eb.GetTextInsets and eb.SetTextInsets) then
+        return
+    end
+    local l, r, t, b = eb:GetTextInsets()
+    eb:SetTextInsets(math.max(l or 0, TEXT_INSET), math.max(r or 0, TEXT_INSET), t or 0, b or 0)
+end
+
 -------------------------------------------------------------------------------
 --  Per-region skinners, keyed by Baganator's own regionType
 -------------------------------------------------------------------------------
@@ -282,10 +295,12 @@ local skinners = {
 
     SearchBox = function(frame)
         WSkin.EditBox(frame)
+        InsetText(frame)
     end,
 
     EditBox = function(frame)
         WSkin.EditBox(frame)
+        InsetText(frame)
     end,
 
     CheckBox = function(frame)
