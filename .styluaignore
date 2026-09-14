@@ -1,0 +1,3 @@
+.release/
+# Generated tables; tools/make-emoji.py owns the layout.
+Emoji.lua
