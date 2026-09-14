@@ -11,20 +11,17 @@ local Widget = {}
 Widget.__index = Widget
 local function nop() end
 local function W(kind, name, parent)
-    local w = setmetatable(
-        {
-            kind = kind,
-            name = name,
-            parent = parent,
-            regions = {},
-            children = {},
-            scripts = {},
-            alpha = 1,
-            level = 2,
-            masks = {},
-        },
-        Widget
-    )
+    local w = setmetatable({
+        kind = kind,
+        name = name,
+        parent = parent,
+        regions = {},
+        children = {},
+        scripts = {},
+        alpha = 1,
+        level = 2,
+        masks = {},
+    }, Widget)
     if name then
         _G[name] = w
     end

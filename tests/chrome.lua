@@ -48,6 +48,12 @@ end
 function Widget:SetJustifyH(j)
     self.justify = j
 end
+function Widget:GetFontString()
+    return self.fontString
+end
+function Widget:GetText()
+    return self.text
+end
 for _, m in ipairs({ "SetColorTexture", "SetHeight", "SetWidth" }) do
     Widget[m] = function() end
 end
@@ -110,7 +116,12 @@ local S = {
     Checkbox = rec("Checkbox"),
     Dropdown = rec("Dropdown"),
     ScrollBar = rec("ScrollBar"),
-    Button = rec("Button"),
+    Button = function(obj, keep)
+        calls.Button = (calls.Button or 0) + 1
+        calls.Button_last = obj
+        calls.Button_keep = keep
+        skinned[obj] = "Button"
+    end,
     CloseButton = rec("CloseButton"),
     PageButton = function(_, glyph)
         calls.PageButton = (calls.PageButton or 0) + 1
@@ -216,8 +227,16 @@ W("CheckButton", nil, win)
 W("Slider", nil, win)
 local dd = W("Frame", "TabardFrameDropDown", win)
 local plain = W("Button", nil, win)
+plain.fontString = W("FontString")
+plain.fontString.text = "Accept"
 local pager = W("Button", nil, win)
 win.NextPageButton = pager
+
+-- An ICON button: no label, just art. Plating one alphas its texture regions,
+-- which is what emptied the role icon in "Choose your Roles" and left a black
+-- square with a tick on it.
+local roleButton = W("Button", nil, win)
+roleButton.Icon = W("Texture")
 
 ns.ButtonsIn(win)
 check("edit box skinned", calls.EditBox == 1, calls.EditBox)
@@ -226,8 +245,20 @@ check("check button not also plated as a button", calls.Button == 1, calls.Butto
 check("slider skinned as a scroll bar", calls.ScrollBar == 1, calls.ScrollBar)
 check("dropdown found by name", calls.Dropdown == 1, calls.Dropdown)
 check("paging button gets the page glyph", calls.PageButton == 1 and calls.PageGlyph == ">", calls.PageGlyph)
-check("the plain button is the one that got plated", calls.Button_last == plain)
-check("and the pager was not plated", calls.Button_last ~= pager)
+check("the labelled button is the one that got plated", calls.Button_last == plain)
+check("and the pager was not plated", skinned[pager] ~= "Button")
+check("an icon button is left alone", skinned[roleButton] == nil)
+check(
+    "a plated button still spares its icon regions",
+    (function()
+        for _, k in ipairs(calls.Button_keep or {}) do
+            if k == "Icon" then
+                return true
+            end
+        end
+        return false
+    end)()
+)
 check("dd is reachable", dd ~= nil)
 
 -- A frame belonging to another loaded addon is not ours to walk into.
@@ -256,6 +287,34 @@ check(
         return titled.TitleText.points == nil
     end)()
 )
+
+-- /euilocal is read HERE, not at the pack's file scope: our saved variables do
+-- not exist that early, so a file-scope read always answers with the default
+-- and a saved `off` would be lost. Every pack goes through Apply, so this is
+-- the one place the switch has to hold.
+local gated
+ns.PacksEnabled = function()
+    return false
+end
+ns.Register({
+    key = "gated",
+    apply = function()
+        gated = true
+    end,
+})
+check("the switch being off stops a pack applying", gated == nil)
+
+ns.PacksEnabled = function()
+    return true
+end
+local ungated
+ns.Register({
+    key = "ungated",
+    apply = function()
+        ungated = true
+    end,
+})
+check("and on lets it through", ungated == true)
 
 out(fails == 0 and "\nall checks passed\n" or ("\n" .. fails .. " failed\n"))
 os.exit(fails == 0 and 0 or 1)

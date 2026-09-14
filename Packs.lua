@@ -21,11 +21,18 @@
 --  Load order is if anything better than it was. This used to register after
 --  WindowPacks.lua so the engine applied it last; a separate addon loads after
 --  the whole suite, so it still gets the last word.
+--
+--  WHERE /euilocal IS READ. Not here. This file used to return at file scope
+--  on the switch, which worked because it read EllesmereUIDB -- another
+--  addon's saved variables, fully loaded by the time our files ran. Our own
+--  are not: they replace whatever exists at file scope when they load, so a
+--  file-scope read always sees the default and a saved `off` would be lost.
+--  The switch is read in Chrome.lua's Apply instead, which runs at login. Every
+--  frame this file touches is touched from an apply, so nothing is skinned
+--  when it is off; what remains is a few function definitions and /euidiag,
+--  which has to keep working to be of any use.
 -------------------------------------------------------------------------------
 local _, ns = ...
-if not ns.PacksEnabled() then
-    return -- /euilocal
-end
 
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc

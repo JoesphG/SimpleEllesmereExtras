@@ -153,6 +153,24 @@ end
 -------------------------------------------------------------------------------
 local CONTROL_DEPTH = 4
 
+-- Regions a plate must spare even on a button that does carry a label, since
+-- the strip behind S.Button alphas every texture it is not told to keep.
+local ICON_KEYS = { "Icon", "icon", "IconTexture", "Texture" }
+
+-- Does this button read as a text button? An icon button has no label, and
+-- flattening it destroys the only thing it was.
+local function Labelled(btn)
+    local fs = btn.GetFontString and btn:GetFontString()
+    if not fs or not fs.GetText then
+        return false
+    end
+    local text = fs:GetText()
+    if text == nil or issecretvalue(text) then
+        return false
+    end
+    return tostring(text):match("%S") ~= nil
+end
+
 local PAGER_KEYS = {
     PrevPageButton = "<",
     PagingLeftButton = "<",
@@ -240,11 +258,15 @@ local function Walk(frame, depth, buttons, seen)
         if child and not (child.IsForbidden and child:IsForbidden()) and not ns.IsForeignFrame(child) then
             local handled = SkinControl(child)
             if not handled and buttons and child:IsObjectType("Button") and ns.S then
-                -- A close button has its own treatment and a list row is a
-                -- Button that is not a button; neither wants a flat plate.
                 local d = ns.FFD(child)
-                if not d.localNotAButton then
-                    ns.S.Button(child)
+                -- A close button has its own treatment; a list row is a Button
+                -- that is not a button; and a button made of ART is somebody's
+                -- icon. Plating one alphas its texture regions, which is what
+                -- emptied the role icon in "Choose your Roles" and left a black
+                -- square with a tick on it. A visible label is the signal that
+                -- a button is a button, so that is what is required.
+                if not d.localNotAButton and Labelled(child) then
+                    ns.S.Button(child, ICON_KEYS)
                 end
             end
             Walk(child, depth - 1, buttons, seen)
@@ -326,6 +348,12 @@ end
 
 local function Apply(entry)
     if entry.done or not ns.S or not Ready(entry) then
+        return
+    end
+    -- /euilocal, read here rather than at the pack's file scope: our saved
+    -- variables do not exist yet when that runs. Every pack is registered
+    -- through here, so this is the one place the switch has to hold.
+    if ns.PacksEnabled and not ns.PacksEnabled() then
         return
     end
     entry.done = true

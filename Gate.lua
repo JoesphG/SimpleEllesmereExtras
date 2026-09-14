@@ -40,8 +40,18 @@ function ns.PacksEnabled()
     return db.packs ~= false
 end
 
--- Read once at load, so `status` can tell a pending change from a live one.
-local loadedState = ns.PacksEnabled()
+-- Read once the saved variables exist, so `status` can tell a pending change
+-- from a live one. NOT at file scope: our own table is replaced when the game
+-- loads it, so a read before ADDON_LOADED always answers with the default.
+local loadedState
+local boot = CreateFrame("Frame")
+boot:RegisterEvent("ADDON_LOADED")
+boot:SetScript("OnEvent", function(_, _, name)
+    if name == "SimpleEllesmereExtras" then
+        loadedState = ns.PacksEnabled()
+        boot:UnregisterEvent("ADDON_LOADED")
+    end
+end)
 
 -- Own addons rather than packs: separate addons, each with its own switch, so
 -- this gate does not reach into them.
@@ -58,7 +68,7 @@ _G.SlashCmdList.EUILOCAL = function(input)
     if arg == "status" then
         local on = ns.PacksEnabled()
         Say(("window packs are %s"):format(on and "|cff00ff00on|r" or "|cffff5555off|r"))
-        if on ~= loadedState then
+        if loadedState ~= nil and on ~= loadedState then
             Say("  |cffffff00/reload to apply|r")
         end
         Say("  Packs.lua -- window skins, rails, popups, chat bubbles, font walk")
