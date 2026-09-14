@@ -9,9 +9,14 @@ local wow_api = {
     "CharacterFrame",
     "CreateFrame",
     "GameTooltip",
+    "GroupFinderFrame",
     "InspectFrame",
+    "LFGListFrame",
+    "PVPQueueFrame",
+    "UIParent",
 
     -- Chat
+    "C_ChatBubbles",
     "CHAT_FRAMES",
     "ChatFrame_AddMessageEventFilter",
     "DEFAULT_CHAT_FRAME",
@@ -61,6 +66,9 @@ globals = {
     "SLASH_EUIEMOJI1",
     "SLASH_EUIHOVER1",
     "SLASH_SEEDIAG1",
+    "SLASH_EUILOCAL1",
+    "SLASH_EUIDIAG1",
+    "EllesmereUIDB",
 }
 
 read_globals = wow_api
@@ -76,6 +84,8 @@ files["tests/"] = {
     ignore = {
         "212", -- stub signatures mirror Blizzard's, unused args and all
         "121/print", -- replaced to capture the addon's output
+        "411", -- fixtures reuse short names across independent blocks
+        "431",
         "631",
     },
 }

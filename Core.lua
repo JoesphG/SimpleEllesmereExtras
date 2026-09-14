@@ -19,6 +19,21 @@ function ns.DB()
     return SimpleEllesmereExtrasDB
 end
 
+-- EllesmereUI's per-frame data table, which the skin primitives use as their
+-- idempotence guard. Underscore-prefixed but a global, and the only piece of
+-- the engine reachable from outside it. Falls back to a table of our own so
+-- the packs still load with EllesmereUI absent.
+local ffd = setmetatable({}, { __mode = "k" })
+
+function ns.FFD(frame)
+    local get = EllesmereUI and EllesmereUI._GetFFD
+    if get then
+        return get(frame)
+    end
+    ffd[frame] = ffd[frame] or {}
+    return ffd[frame]
+end
+
 local waiting = {}
 
 function ns.OnSkin(fn)

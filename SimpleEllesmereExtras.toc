@@ -13,8 +13,11 @@
 ## X-Website: https://github.com/JoesphG/SimpleEllesmereExtras
 
 Core.lua
+Gate.lua
+Chrome.lua
 HyperlinkHover.lua
 Emoji.lua
 Baganator.lua
 GearAlert.lua
 Diag.lua
+Packs.lua
