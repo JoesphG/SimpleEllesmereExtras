@@ -178,7 +178,9 @@ Baganator = {
 }
 
 local ns = {}
+SlashCmdList = SlashCmdList or {}
 assert(loadfile("Core.lua"))("SimpleEllesmereExtras", ns)
+assert(loadfile("Gate.lua"))("SimpleEllesmereExtras", ns)
 assert(loadfile(FILE))("SimpleEllesmereExtras", ns)
 -- EUI hands the facade over at PLAYER_LOGIN.
 skinCallback(WSkin)
@@ -342,6 +344,17 @@ check("divider recoloured without error", _G.__err == nil, _G.__err)
 -- Unknown types must be ignored silently.
 listener({ regionType = "SomethingNew", region = W("Frame") })
 check("unknown regionType ignored", _G.__err == nil, _G.__err)
+
+-- The skin has its own switch now. Checked per region rather than at file
+-- scope, because our saved variables do not exist that early.
+SimpleEllesmereExtrasDB.baganator = false
+local offSlot = W("Button")
+offSlot.icon = W("Texture")
+offSlot.regions = { offSlot.icon }
+local before = calls.Button
+listener({ regionType = "ItemButton", region = offSlot })
+check("the skin switch off leaves a slot alone", calls.Button == before, calls.Button)
+SimpleEllesmereExtrasDB.baganator = nil
 
 -- The whole point, asserted once over every region type above: this skin
 -- never changes the metrics of text it did not create.

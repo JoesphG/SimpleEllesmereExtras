@@ -137,6 +137,9 @@ _G.C_AddOns = {
     end,
 }
 
+SlashCmdList = SlashCmdList or {}
+assert(loadfile("Core.lua"))("SimpleEllesmereExtras", ns)
+assert(loadfile("Gate.lua"))("SimpleEllesmereExtras", ns)
 assert(loadfile(FILE))("SimpleEllesmereExtras", ns)
 
 local out = io.write
@@ -231,6 +234,18 @@ local empty = W("Button", "CharacterHeadSlot")
 empty.id = INVSLOT_HEAD
 GA.UpdateSlot(empty, "player")
 check("an empty slot is never lit", ffd[empty].localGearAlert == nil or ffd[empty].localGearAlert:IsShown() == false)
+
+-- The alert has its own switch now. Unlike the skins it applies live, because
+-- an overlay can simply be hidden again.
+enchants[INVSLOT_CHEST] = nil
+GA.UpdateSlot(slot, "player")
+check("lit with the switch on", ffd[slot].localGearAlert:IsShown() == true)
+SimpleEllesmereExtrasDB.gearAlert = false
+GA.UpdateSlot(slot, "player")
+check("switching it off clears a lit slot without a reload", ffd[slot].localGearAlert:IsShown() == false)
+SimpleEllesmereExtrasDB.gearAlert = nil
+GA.UpdateSlot(slot, "player")
+check("and back on lights it again", ffd[slot].localGearAlert:IsShown() == true)
 
 out(fails == 0 and "\nall checks passed\n" or ("\n" .. fails .. " FAILED\n"))
 os.exit(fails == 0 and 0 or 1)

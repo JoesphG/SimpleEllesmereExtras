@@ -350,10 +350,11 @@ local function Apply(entry)
     if entry.done or not ns.S or not Ready(entry) then
         return
     end
-    -- /euilocal, read here rather than at the pack's file scope: our saved
-    -- variables do not exist yet when that runs. Every pack is registered
-    -- through here, so this is the one place the switch has to hold.
-    if ns.PacksEnabled and not ns.PacksEnabled() then
+    -- /euilocal and the per-pack switches, read here rather than at the pack's
+    -- file scope: our saved variables do not exist yet when that runs. Every
+    -- pack is registered through here, so this is the one place they have to
+    -- hold.
+    if ns.PackEnabled and not ns.PackEnabled(entry.key) then
         return
     end
     entry.done = true

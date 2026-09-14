@@ -378,6 +378,11 @@ local function OnRegion(details)
     if not skinner then
         return
     end
+    -- Checked here, not at file scope: our saved variables do not exist that
+    -- early. Reload-bound in effect, since a stripped texture has no inverse.
+    if not ns.BaganatorSkinEnabled() then
+        return
+    end
     if not ns.S then
         if not ns.loginDone then
             pending[#pending + 1] = details

@@ -240,6 +240,11 @@ local function UpdateSlot(slot, unit)
         return
     end
 
+    -- Live, unlike the skins: an overlay can simply be hidden again.
+    if not ns.GearAlertEnabled() then
+        return SetAlert(slot, nil)
+    end
+
     local slotID = slot:GetID()
     if not slotID or slotID == 0 then
         return SetAlert(slot, nil)

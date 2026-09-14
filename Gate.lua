@@ -40,6 +40,44 @@ function ns.PacksEnabled()
     return db.packs ~= false
 end
 
+-- Each registered pack maps to its own switch, so the font walk can go without
+-- taking the rails and the chat bubbles with it. The registry keys the packs
+-- already; two of them carry the owning addon after a colon.
+ns.PACKS = {
+    { key = "localfonts", db = "packFonts", label = "Fonts across windows" },
+    { key = "localstock", db = "packStock", label = "Stock Blizzard windows" },
+    { key = "localgroupfinder", db = "packGroupFinder", label = "Group Finder rail" },
+    { key = "localpvp", db = "packPvp", label = "PVP rail" },
+    { key = "localdialogs", db = "packDialogs", label = "Popup dialogs" },
+    { key = "localchatbubbles", db = "packBubbles", label = "Chat bubbles" },
+}
+
+local byKey = {}
+for _, pack in ipairs(ns.PACKS) do
+    byKey[pack.key] = pack.db
+end
+
+-- Defaults to on, like every switch here: a key nobody has touched is nil.
+function ns.PackEnabled(key)
+    if not ns.PacksEnabled() then
+        return false
+    end
+    if not key then
+        return true
+    end
+    local field = byKey[key:match("^[^:]+")]
+    return not field or ns.DB()[field] ~= false
+end
+
+-- The two features that shipped with no switch at all. Both default on.
+function ns.GearAlertEnabled()
+    return ns.DB().gearAlert ~= false
+end
+
+function ns.BaganatorSkinEnabled()
+    return ns.DB().baganator ~= false
+end
+
 -- Read once the saved variables exist, so `status` can tell a pending change
 -- from a live one. NOT at file scope: our own table is replaced when the game
 -- loads it, so a read before ADDON_LOADED always answers with the default.

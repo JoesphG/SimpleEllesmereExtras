@@ -292,8 +292,9 @@ check(
 -- not exist that early, so a file-scope read always answers with the default
 -- and a saved `off` would be lost. Every pack goes through Apply, so this is
 -- the one place the switch has to hold.
-local gated
-ns.PacksEnabled = function()
+local gated, gatedKey
+ns.PackEnabled = function(key)
+    gatedKey = key
     return false
 end
 ns.Register({
@@ -303,8 +304,9 @@ ns.Register({
     end,
 })
 check("the switch being off stops a pack applying", gated == nil)
+check("the switch is asked about the pack by key", gatedKey == "gated", tostring(gatedKey))
 
-ns.PacksEnabled = function()
+ns.PackEnabled = function()
     return true
 end
 local ungated
