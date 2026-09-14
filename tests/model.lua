@@ -110,5 +110,21 @@ check("status counts the packs applied", ns.StatusText():find("6 of 6") ~= nil, 
 Find("Fonts across windows").set(false)
 check("and follows a pack being switched off", ns.StatusText():find("5 of 6") ~= nil, ns.StatusText())
 
+-- Every command is listed WITH what it does. The page used to be a bare
+-- comma-separated list of names, which tells a reader nothing.
+local commands = 0
+for _, page in ipairs(ns.Model.Pages()) do
+    for _, section in ipairs(page.sections) do
+        for _, row in ipairs(section.rows) do
+            if row.kind == "command" then
+                commands = commands + 1
+                check("command starts with a slash: " .. tostring(row.label), tostring(row.label):sub(1, 1) == "/")
+                check("command is described: " .. tostring(row.label), (row.desc or ""):find("%S") ~= nil)
+            end
+        end
+    end
+end
+check("every slash command this addon owns is listed", commands == 8, commands)
+
 out(fails == 0 and "\nall checks passed\n" or ("\n" .. fails .. " failed\n"))
 os.exit(fails == 0 and 0 or 1)

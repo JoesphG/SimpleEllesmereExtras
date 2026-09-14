@@ -43,11 +43,16 @@ function UI.Accent()
     return unpack(FALLBACK.accent)
 end
 
+local MIN_PANEL_ALPHA = 0.94
+
 function UI.PanelColor()
     if ns.S and ns.S.GetPanelColor then
         local r, g, b, a = ns.S.GetPanelColor()
         if r then
-            return r, g, b, a or 1
+            -- Hue from the theme, opacity ours: EllesmereUI's alpha is tuned
+            -- for a shell laid over the rest of the UI, and at that value the
+            -- world showed straight through this window.
+            return r, g, b, math.max(a or 1, MIN_PANEL_ALPHA)
         end
     end
     return unpack(FALLBACK.panel)
@@ -309,13 +314,13 @@ function UI.Check(parent)
         local r, g, b = UI.Accent()
         mark:SetColorTexture(r, g, b, 1)
         mark:SetShown(checked)
+        hover:SetColorTexture(1, 1, 1, 0)
         if enabled then
             boxBorder:SetColor(0.35, 0.35, 0.38, 1)
             boxFill:SetColorTexture(unpack(FALLBACK.fill))
             mark:SetAlpha(1)
             label:SetTextColor(unpack(checked and TEXT.bright or TEXT.normal))
         else
-            hover:SetColorTexture(1, 1, 1, 0)
             boxBorder:SetColor(0.25, 0.25, 0.27, 1)
             boxFill:SetColorTexture(1, 1, 1, 0.02)
             mark:SetAlpha(0.35)
@@ -389,6 +394,34 @@ function UI.Button(parent)
     end
 
     return btn
+end
+
+function UI.Command(parent)
+    local frame = CreateFrame("Frame", nil, parent)
+
+    local name = Label(frame, "GameFontHighlightSmall")
+    name:SetPoint("TOPLEFT")
+    name:SetWidth(130)
+    name:SetJustifyH("LEFT")
+
+    local desc = Label(frame, "GameFontHighlightSmall")
+    desc:SetPoint("TOPLEFT", name, "TOPRIGHT", 8, 0)
+    desc:SetPoint("RIGHT")
+    desc:SetJustifyH("LEFT")
+    desc:SetSpacing(2)
+
+    function frame:Configure(command, text)
+        local r, g, b = UI.Accent()
+        name:SetText(command or "")
+        name:SetTextColor(r, g, b)
+        desc:SetText(text or "")
+        desc:SetTextColor(unpack(TEXT.normal))
+        local h = math.max(desc:GetStringHeight() or 0, 14)
+        frame:SetHeight(h)
+        frame.height = h
+    end
+
+    return frame
 end
 
 function UI.Slider(parent)

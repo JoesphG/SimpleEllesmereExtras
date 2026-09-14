@@ -66,17 +66,28 @@ local function DisabledReason(row)
     return reason or nil
 end
 
-local function BuildRow(page, row)
+local function Place(widget, y)
+    widget:ClearAllPoints()
+    widget:SetPoint("TOPLEFT", 0, -y)
+    widget:SetPoint("TOPRIGHT", 0, -y)
+end
+
+-- ANCHOR BEFORE CONFIGURE. A paragraph measures its own wrapped height, and a
+-- frame with no anchors has no width to wrap against, so it answered with one
+-- line and the reload button landed on top of the text above it.
+local function BuildRow(page, row, y)
     local reason = DisabledReason(row)
 
     if row.kind == "text" then
         local widget = Pool(page, "text", ns.UI.Paragraph)
+        Place(widget, y)
         widget:Configure(row.get(), row.color)
         return widget
     end
 
     if row.kind == "check" then
         local widget = Pool(page, "check", ns.UI.Check)
+        Place(widget, y)
         widget:Configure(row.label, row.get(), reason == nil, reason or row.desc)
         widget.onClick = function(value)
             row.set(value)
@@ -85,8 +96,16 @@ local function BuildRow(page, row)
         return widget
     end
 
+    if row.kind == "command" then
+        local widget = Pool(page, "command", ns.UI.Command)
+        Place(widget, y)
+        widget:Configure(row.label, row.desc)
+        return widget
+    end
+
     if row.kind == "slider" then
         local widget = Pool(page, "slider", ns.UI.Slider)
+        Place(widget, y)
         widget:Configure(row.label, row.desc, row.min, row.max, row.step, row.get(), function(value)
             row.set(value)
         end)
@@ -102,6 +121,7 @@ local function BuildRow(page, row)
             frame.buttons = {}
             return frame
         end)
+        Place(host, y)
         for index, spec in ipairs(row.buttons) do
             local btn = host.buttons[index]
             if not btn then
@@ -147,11 +167,8 @@ local function LayoutPage(page, model)
         previous = header
 
         for _, row in ipairs(section.rows) do
-            local widget = BuildRow(page, row)
+            local widget = BuildRow(page, row, y)
             if widget then
-                widget:ClearAllPoints()
-                widget:SetPoint("TOPLEFT", 0, -y)
-                widget:SetPoint("TOPRIGHT", 0, -y)
                 y = y + (widget.height or 20) + GAP
                 previous = widget
             end
@@ -261,9 +278,10 @@ function Panel.Refresh()
     for _, model in ipairs(models) do
         local page = PageFor(model)
         if model.key == currentKey then
-            LayoutPage(page, model)
+            -- Width first: LayoutPage measures wrapped text against it.
             scroll:SetScrollChild(page.frame)
             page.frame:SetWidth(scroll:GetWidth())
+            LayoutPage(page, model)
             page.frame:Show()
         else
             page.frame:Hide()

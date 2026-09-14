@@ -34,6 +34,10 @@ local function Buttons(specs)
     return { kind = "buttons", buttons = specs }
 end
 
+local function Command(name, desc)
+    return { kind = "command", label = name, desc = desc }
+end
+
 --------------------------------------------------------------------------------
 -- Shared state the rows read
 --------------------------------------------------------------------------------
@@ -235,9 +239,20 @@ local function DiagnosticsPage()
             {
                 title = "Commands",
                 rows = {
-                    Text(function()
-                        return "/euihover, /euiemoji, /euilocal, /euidiag, /seediag"
-                    end, "dim"),
+                    Command("/see", "Open this window."),
+                    Command("/euihover", "Toggle the tooltip that appears when you hover a link in chat."),
+                    Command("/euiemoji", "Toggle emoji rendering in chat."),
+                    Command("/euiemoji size N", "Pin emoji to N pixels, 8 to 32. Unset, they follow your chat font."),
+                    Command(
+                        "/euiemoji list <text>",
+                        "Search the emoji names. There are about 1400, so a term is required."
+                    ),
+                    Command(
+                        "/euilocal",
+                        "Turn the window packs off or on, then reload. `status` lists what it covers."
+                    ),
+                    Command("/euidiag <Frame>", "Print every string in a window with its font, size and box widths."),
+                    Command("/seediag <Frame>", "Print only the text that is truncated or spilling out of its frame."),
                 },
             },
         },
