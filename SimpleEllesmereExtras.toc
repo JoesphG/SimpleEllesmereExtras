@@ -1,4 +1,4 @@
-## Interface: 120100
+## Interface: 120100, 120105
 ## Title: SimpleEllesmereExtras
 ## Notes: Extras for EllesmereUI: window skins for the stock frames it has no pack for, chat link preview, chat emoji, a Baganator skin and a missing enchant or gem alert.
 ## Author: JoesphG
