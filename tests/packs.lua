@@ -583,6 +583,22 @@ RunFrame()
 check("a paragraph that wraps by design keeps our font", para.font == "EUIFont", para.font)
 check("and keeps its size", para.size == 12, para.size)
 
+-- A string released between the walk and the deferred pass. Every method on it
+-- raises then, IsForbidden included, and it must not take its neighbours down.
+local released = plain(4, 200)
+local survivor = plain(4, 200)
+pve.regions = { released, survivor }
+for _, p in ipairs(WSkin._packs) do
+    if not p.addons then
+        p.apply()
+    end
+end
+function released:IsForbidden()
+    error("calling 'IsForbidden' on bad self (Wrong object type for function)")
+end
+check("a released string does not raise", pcall(RunFrame))
+check("its neighbour is still re-fonted", survivor.font == "EUIFont", survivor.font)
+
 -- THE SPEC-PAGE BUG. Ordinary strings side by side, one of them long enough
 -- that our face will not fit it. The old code answered per STRING: the long one
 -- was shrunk a point, or handed back to Blizzard's face outright, while its

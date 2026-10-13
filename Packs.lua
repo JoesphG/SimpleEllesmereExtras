@@ -463,7 +463,10 @@ local function Flush(attempt)
 
     local unresolved = {}
     for fs in pairs(batch) do
-        if not (fs.IsForbidden and fs:IsForbidden()) then
+        -- A string can be released between the walk and this pass; calling
+        -- into it then raises "Wrong object type", so even this check is pcall'd.
+        local alive, forbidden = pcall(fs.IsForbidden, fs)
+        if alive and not forbidden then
             local ok, settled = pcall(RefontFitted, fs)
             if ok and settled == false then
                 unresolved[fs] = true
