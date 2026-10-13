@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2
+
+- The gear alert flags an off-hand weapon with no enchant again; 12.1.5 removed the call it used.
+- Interface 120105, for patch 12.1.5.
+
 ## 1.2.1
 
 - The options window no longer lays the reload button on top of the text above
