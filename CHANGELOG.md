@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+
+- No longer throws "calling 'IsForbidden' on bad self" when a window's text is released before it is re-fonted.
+
 ## 1.2.2
 
 - The gear alert flags an off-hand weapon with no enchant again; 12.1.5 removed the call it used.
