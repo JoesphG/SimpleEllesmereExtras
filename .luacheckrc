@@ -34,7 +34,6 @@ local wow_api = {
     "C_Item",
     "Enum",
     "GetInventoryItemLink",
-    "GetItemInfoInstant",
     "INVSLOT_BACK",
     "INVSLOT_CHEST",
     "INVSLOT_FEET",

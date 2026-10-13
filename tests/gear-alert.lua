@@ -98,10 +98,10 @@ local items, enchants, gems, sockets = {}, {}, {}, {}
 _G.GetInventoryItemLink = function(_, slotID)
     return items[slotID]
 end
-_G.GetItemInfoInstant = function(link)
-    return nil, nil, nil, nil, nil, (link == "shield" and 4 or 2)
-end
 _G.C_Item = {
+    GetItemInfoInstant = function(link)
+        return nil, nil, nil, nil, nil, (link == "shield" and 4 or 2)
+    end,
     GetItemStats = function(link)
         local n = sockets[link]
         return n and { EMPTY_SOCKET_PRISMATIC = n } or {}

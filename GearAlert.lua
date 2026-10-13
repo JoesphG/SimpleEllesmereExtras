@@ -97,10 +97,10 @@ end
 
 local function CanHaveEnchant(slotID, link)
     if slotID == INVSLOT_OFFHAND then
-        if not (link and GetItemInfoInstant) then
+        if not (link and C_Item and C_Item.GetItemInfoInstant) then
             return false
         end
-        local _, _, _, _, _, classID = GetItemInfoInstant(link)
+        local _, _, _, _, _, classID = C_Item.GetItemInfoInstant(link)
         return classID == (Enum and Enum.ItemClass and Enum.ItemClass.Weapon)
     end
     return ENCHANTABLE[slotID] == true
