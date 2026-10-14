@@ -640,6 +640,27 @@ end
 RunFrame()
 check("a size-only change by Blizzard is followed", specShort.size == 9, specShort.size)
 
+-- A string already wearing what the last pass left is not touched again. Every
+-- ScrollBox Update re-queues its rows, and two SetFont calls per string per
+-- update is a frame-time cost on a busy list.
+local setFonts = 0
+local realSetFont = Widget.SetFont
+Widget.SetFont = function(fs, ...)
+    -- An unmeasurable label is retried by design.
+    if fs ~= auto then
+        setFonts = setFonts + 1
+    end
+    return realSetFont(fs, ...)
+end
+for _, p in ipairs(WSkin._packs) do
+    if not p.addons then
+        p.apply()
+    end
+end
+RunFrame()
+Widget.SetFont = realSetFont
+check("an unchanged string is not re-fonted", setFonts == 0, setFonts)
+
 -- A LIST ROW IS A BUTTON, AND ITS COLUMNS ARE NOT LABELS.
 --
 -- Blizzard builds the Premade Groups applicant list out of row Buttons with

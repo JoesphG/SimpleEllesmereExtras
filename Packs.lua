@@ -353,6 +353,17 @@ local function RefontFitted(fs)
         return
     end
 
+    -- Still wearing what the last pass left: nothing to do. A button label also
+    -- needs the text it was fitted to, since new text can overflow the same font.
+    if
+        curFace == fs.euiLocalApplied
+        and curSize == fs.euiLocalAppliedSize
+        and curFlags == fs.euiLocalAppliedFlags
+        and (not IsButtonLabel(fs) or (fs.euiLocalFitText ~= nil and (fs:GetText() or false) == fs.euiLocalFitText))
+    then
+        return true
+    end
+
     if curFace ~= fs.euiLocalApplied then
         -- A face this file did not leave here, so it is Blizzard's: take all
         -- of it as the new baseline.
@@ -441,6 +452,14 @@ local function RefontFitted(fs)
     -- Record all three, so the next pass can tell our own work from someone
     -- else's -- and so a size-only change by Blizzard is noticed.
     fs.euiLocalApplied, fs.euiLocalAppliedSize, fs.euiLocalAppliedFlags = fs:GetFont()
+    -- false stands for "fitted with no text"; nil means "not fitted", so never skipped.
+    fs.euiLocalFitText = nil
+    if isLabel and settled then
+        local text = fs:GetText() or false
+        if not issecretvalue(text) then
+            fs.euiLocalFitText = text
+        end
+    end
     return settled
 end
 
