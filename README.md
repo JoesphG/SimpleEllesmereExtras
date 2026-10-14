@@ -41,6 +41,7 @@ alert need it.
 | `/euiemoji size <8-32>` | Emoji size in chat |
 | `/euiemoji list <text>` | Search the emoji names |
 | `/seediag [FrameName]` | Report text that is truncated or spilling its frame |
+| `/seediag frames` | Count top-level frames by where they were created |
 | `/euilocal on\|off\|status` | Switch the window packs off, then `/reload` |
 | `/euidiag [FrameName]` | Dump a window's text: font, size, box vs text width |
 

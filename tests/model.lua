@@ -124,7 +124,7 @@ for _, page in ipairs(ns.Model.Pages()) do
         end
     end
 end
-check("every slash command this addon owns is listed", commands == 8, commands)
+check("every slash command this addon owns is listed", commands == 9, commands)
 
 out(fails == 0 and "\nall checks passed\n" or ("\n" .. fails .. " failed\n"))
 os.exit(fails == 0 and 0 or 1)

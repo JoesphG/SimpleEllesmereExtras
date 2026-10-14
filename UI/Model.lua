@@ -253,6 +253,7 @@ local function DiagnosticsPage()
                     ),
                     Command("/euidiag <Frame>", "Print every string in a window with its font, size and box widths."),
                     Command("/seediag <Frame>", "Print only the text that is truncated or spilling out of its frame."),
+                    Command("/seediag frames", "Count top-level frames by the file and line that created them."),
                 },
             },
         },
