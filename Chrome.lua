@@ -253,8 +253,9 @@ local function Walk(frame, depth, buttons, seen)
     if not frame.GetChildren then
         return
     end
-    for i = 1, select("#", frame:GetChildren()) do
-        local child = select(i, frame:GetChildren())
+    local children = { frame:GetChildren() }
+    for i = 1, #children do
+        local child = children[i]
         if child and not (child.IsForbidden and child:IsForbidden()) and not ns.IsForeignFrame(child) then
             local handled = SkinControl(child)
             if not handled and buttons and child:IsObjectType("Button") and ns.S then

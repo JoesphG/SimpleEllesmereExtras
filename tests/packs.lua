@@ -910,6 +910,18 @@ box:Update()
 RunFrame()
 check("a re-fonted row follows Blizzard's new size", box.row1.size == 9, box.row1.size)
 
+-- One GetChildren call per frame walked. Calling it again per child made each
+-- walk quadratic in the row count, on every ScrollBox Update.
+local childCalls = 0
+local target = box.ScrollTarget
+function target:GetChildren()
+    childCalls = childCalls + 1
+    return Widget.GetChildren(self)
+end
+box:Update()
+target.GetChildren = nil
+check("a walk asks a frame for its children once", childCalls == 1, childCalls)
+
 -- Chat bubbles: anonymous, pooled, no event -- polled, and the poll must
 -- retire itself when nothing is talking.
 --

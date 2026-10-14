@@ -520,16 +520,19 @@ local function FontsIn(frame, depth)
         return
     end
 
-    for i = 1, select("#", frame:GetRegions()) do
-        local r = select(i, frame:GetRegions())
+    local regions = { frame:GetRegions() }
+
+    for i = 1, #regions do
+        local r = regions[i]
         if r and r.IsObjectType and r:IsObjectType("FontString") then
             QueueRefont(r)
         end
     end
 
     if (depth or 0) > 0 and frame.GetChildren then
-        for i = 1, select("#", frame:GetChildren()) do
-            FontsIn((select(i, frame:GetChildren())), depth - 1)
+        local children = { frame:GetChildren() }
+        for i = 1, #children do
+            FontsIn(children[i], depth - 1)
         end
     end
 end
@@ -799,8 +802,9 @@ local function AttachScrollBoxes(frame, depth)
     end
 
     if frame.GetChildren then
-        for i = 1, select("#", frame:GetChildren()) do
-            AttachScrollBoxes((select(i, frame:GetChildren())), depth - 1)
+        local children = { frame:GetChildren() }
+        for i = 1, #children do
+            AttachScrollBoxes(children[i], depth - 1)
         end
     end
 end
@@ -998,8 +1002,10 @@ local function BubbleBody(frame, depth)
         return nil
     end
 
-    for i = 1, select("#", frame:GetRegions()) do
-        local r = select(i, frame:GetRegions())
+    local regions = { frame:GetRegions() }
+
+    for i = 1, #regions do
+        local r = regions[i]
         if r and r.IsObjectType and r:IsObjectType("FontString") then
             return frame
         end
@@ -1008,8 +1014,9 @@ local function BubbleBody(frame, depth)
     if depth <= 0 or not frame.GetChildren then
         return nil
     end
-    for i = 1, select("#", frame:GetChildren()) do
-        local body = BubbleBody((select(i, frame:GetChildren())), depth - 1)
+    local children = { frame:GetChildren() }
+    for i = 1, #children do
+        local body = BubbleBody(children[i], depth - 1)
         if body then
             return body
         end
@@ -1287,8 +1294,10 @@ local function DumpStrings(frame, depth, seen)
     end
     seen[frame] = true
 
-    for i = 1, select("#", frame:GetRegions()) do
-        local r = select(i, frame:GetRegions())
+    local regions = { frame:GetRegions() }
+
+    for i = 1, #regions do
+        local r = regions[i]
         if r and r.IsObjectType and r:IsObjectType("FontString") then
             local text = r:GetText()
             if text and text ~= "" then
@@ -1323,8 +1332,9 @@ local function DumpStrings(frame, depth, seen)
     end
 
     if frame.GetChildren then
-        for i = 1, select("#", frame:GetChildren()) do
-            DumpStrings((select(i, frame:GetChildren())), depth - 1, seen)
+        local children = { frame:GetChildren() }
+        for i = 1, #children do
+            DumpStrings(children[i], depth - 1, seen)
         end
     end
 end
@@ -1337,8 +1347,9 @@ local function DumpBubble(index, bubble, frame, depth)
     depth = depth or 0
 
     local textures, strings = 0, 0
-    for i = 1, select("#", frame:GetRegions()) do
-        local r = select(i, frame:GetRegions())
+    local regions = { frame:GetRegions() }
+    for i = 1, #regions do
+        local r = regions[i]
         if r and r.IsObjectType then
             if r:IsObjectType("Texture") then
                 textures = textures + 1
@@ -1368,8 +1379,9 @@ local function DumpBubble(index, bubble, frame, depth)
     end
 
     if depth < 3 and frame.GetChildren then
-        for i = 1, select("#", frame:GetChildren()) do
-            DumpBubble(index, bubble, (select(i, frame:GetChildren())), depth + 1)
+        local children = { frame:GetChildren() }
+        for i = 1, #children do
+            DumpBubble(index, bubble, children[i], depth + 1)
         end
     end
 end
