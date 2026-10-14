@@ -138,6 +138,48 @@ check("the left edge counts too", leftSide == "left", tostring(leftSide))
 count.left, count.right = nil, nil
 check("an unpositioned string is not reported", ns.Diag.Overflow(count) == nil)
 
+-- /seediag frames: UIParent's children grouped by creation site, biggest first.
+UIParent = W("Frame", { name = "UIParent" })
+local function At(loc, parent)
+    return W("Frame", {
+        parent = parent or UIParent,
+        GetSourceLocation = function()
+            return loc
+        end,
+    })
+end
+local all = {
+    At("Interface/AddOns/Leaky/Core.lua:42"),
+    At("Interface/AddOns/Leaky/Core.lua:42"),
+    At("Interface/AddOns/Leaky/Core.lua:42"),
+    At("Interface/AddOns/Tidy/Main.lua:7"),
+    At("Interface/AddOns/Leaky/Core.lua:42", W("Frame")),
+    W("Frame", { parent = UIParent, forbidden = true }),
+}
+function EnumerateFrames(prev)
+    if not prev then
+        return all[1]
+    end
+    for i, f in ipairs(all) do
+        if f == prev then
+            return all[i + 1]
+        end
+    end
+end
+printed = {}
+local total, sorted = ns.Diag.CountFrames()
+check("counts only UIParent's own, unforbidden children", total == 4, tostring(total))
+check("worst origin first", sorted[1].origin == "Leaky/Core.lua:42" and sorted[1].n == 3, sorted[1].origin)
+check(
+    "slash routes 'frames' to the count",
+    (function()
+        printed = {}
+        ns.Diag.Report("frames")
+        return printed[1] and printed[1]:find("4 frames") ~= nil
+    end)(),
+    printed[1]
+)
+
 -- Secret values must not be read as numbers.
 local secret = W("FontString", { text = "SECRET", width = 10, stringWidth = 40, font = "SECRET", size = "SECRET" })
 check("a secret font does not error", (pcall(ns.Diag.Truncation, secret)) == true)

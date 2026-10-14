@@ -14,6 +14,7 @@ local wow_api = {
     "LFGListFrame",
     "PVPQueueFrame",
     "UIParent",
+    "EnumerateFrames",
 
     -- Chat
     "C_ChatBubbles",

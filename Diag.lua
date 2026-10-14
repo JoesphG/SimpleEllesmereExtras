@@ -3,6 +3,7 @@
 --
 --  `/seediag [FrameName]` -- find text that is truncated or spilling out of
 --  the thing that holds it, without reading a screenshot.
+--  `/seediag frames` -- count top-level frames by where they were created.
 --
 --  WHY THIS EXISTS
 --
@@ -193,8 +194,56 @@ local function Target(name)
     end
 end
 
+-- `/seediag frames`: UIParent's direct children grouped by where they were
+-- created. Thousands means something keeps creating frames; the top line says
+-- which file and line. Walks EnumerateFrames because GetChildren on that many
+-- overflows the stack.
+local FRAMES_REPORTED = 10
+
+local function Origin(frame)
+    local loc = frame.GetSourceLocation and frame:GetSourceLocation()
+    if type(loc) ~= "string" or issecret(loc) then
+        return "?"
+    end
+    return loc:match("[Aa]dd[Oo]ns[/\\](.+)$") or loc
+end
+
+local function CountFrames()
+    local byOrigin, total = {}, 0
+    local frame = EnumerateFrames()
+    while frame do
+        local ok, top = pcall(function()
+            return not frame:IsForbidden() and frame:GetParent() == UIParent
+        end)
+        if ok and top then
+            total = total + 1
+            local origin = Origin(frame)
+            byOrigin[origin] = (byOrigin[origin] or 0) + 1
+        end
+        frame = EnumerateFrames(frame)
+    end
+
+    local sorted = {}
+    for origin, n in pairs(byOrigin) do
+        sorted[#sorted + 1] = { origin = origin, n = n }
+    end
+    table.sort(sorted, function(x, y)
+        return x.n > y.n
+    end)
+
+    print(("SimpleEllesmereExtras diag: %d frames parented to UIParent."):format(total))
+    for i = 1, math.min(#sorted, FRAMES_REPORTED) do
+        print(("  %5d  %s"):format(sorted[i].n, sorted[i].origin))
+    end
+    return total, sorted
+end
+
 local function Report(input)
     local name = (input or ""):match("^%s*(.-)%s*$")
+    if name == "frames" then
+        CountFrames()
+        return
+    end
     local frame, label = Target(name)
     if not frame then
         print("SimpleEllesmereExtras diag: /seediag <FrameName>. No bag frame open to default to.")
@@ -213,7 +262,7 @@ local function Report(input)
     end
 end
 
-ns.Diag = { Report = Report, Truncation = Truncation, Overflow = Overflow, Walk = Walk }
+ns.Diag = { Report = Report, Truncation = Truncation, Overflow = Overflow, Walk = Walk, CountFrames = CountFrames }
 
 _G.SLASH_SEEDIAG1 = "/seediag"
 _G.SlashCmdList.SEEDIAG = Report
