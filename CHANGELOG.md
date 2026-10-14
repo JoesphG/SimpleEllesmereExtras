@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.4
+
+- Text already in the EllesmereUI font is no longer re-fonted on every list refresh.
+- Window walks take linear time instead of quadratic.
+- `/seediag frames` counts top-level frames by the file and line that created them.
+
 ## 1.2.3
 
 - No longer throws "calling 'IsForbidden' on bad self" when a window's text is released before it is re-fonted.

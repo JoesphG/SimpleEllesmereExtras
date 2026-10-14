@@ -2,7 +2,7 @@
 ## Title: SimpleEllesmereExtras
 ## Notes: Extras for EllesmereUI: window skins for the stock frames it has no pack for, chat link preview, chat emoji, a Baganator skin and a missing enchant or gem alert.
 ## Author: JoesphG
-## Version: 1.2.3
+## Version: 1.2.4
 ## SavedVariables: SimpleEllesmereExtrasDB
 ## OptionalDeps: EllesmereUI, EllesmereUIBlizzardSkin, EllesmereUIChat, Baganator
 ## X-Curse-Project-ID: 1695824
